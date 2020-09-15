@@ -1,0 +1,147 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2513
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Sub test()\
+'Apply code to all worksheets\
+For Each ws In Worksheets\
+\
+'Declare all variables\
+Dim LastRow As Long\
+Dim LastColumn As Long\
+Dim AddTableRow As Long\
+Dim i As Long\
+Dim ticker As String\
+Dim OpeningValue As Double\
+Dim ClosingValue As Double\
+Dim TotalVolume As Double\
+Dim PercentChange As Double\
+\
+'Find Last Row and Last Column\
+LastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row\
+LastColumn = ws.Cells(1, Columns.Count).End(xlToLeft).Column\
+\
+'Headers\
+ws.Cells(1, LastColumn + 2).Value = "Ticker"\
+ws.Cells(1, LastColumn + 3).Value = "Yearly Change"\
+ws.Cells(1, LastColumn + 4).Value = "Percent Change"\
+ws.Cells(1, LastColumn + 5).Value = "Total Stock Volume"\
+ws.Cells(2, LastColumn + 7).Value = "Greatest % Increase"\
+ws.Cells(3, LastColumn + 7).Value = "Greatest % Decrease"\
+ws.Cells(4, LastColumn + 7).Value = "Greatest Total Volume"\
+ws.Cells(1, LastColumn + 8).Value = "Ticker"\
+ws.Cells(1, LastColumn + 9).Value = "Value"\
+\
+'Setting initial ticker\
+ticker = ws.Range("A2").Value\
+\
+'Setting Opening Price for the first ticker\
+OpeningValue = ws.Range("C2").Value\
+\
+'Setting Total Stock Volume to 0\
+TotalVolume = 0\
+\
+'Keep track of ticker's initial location\
+AddTableRow = 2\
+\
+'Difference in percent\
+PercentChange = 0\
+\
+For i = 2 To LastRow + 1\
+    \
+    If ws.Range("A" & i).Value <> ticker Then\
+        'Add the next ticker's Closing price to the variable\
+        ClosingValue = ws.Range("F" & i - 1).Value\
+                \
+        ws.Range("I" & AddTableRow).Value = ticker\
+        ws.Range("J" & AddTableRow).Value = ClosingValue - OpeningValue\
+        \
+        ' If Opening price is 0 / issue of dividing by 0:\
+        If OpeningValue <> 0 Then\
+        PercentChange = (1 - (ClosingValue / OpeningValue))\
+        ws.Range("K" & AddTableRow).Value = Format(PercentChange, "Percent")\
+        \
+        Else: ws.Range("J" & AddTableRow).Value = Null\
+        End If\
+        ws.Range("L" & AddTableRow).Value = TotalVolume\
+\
+        ticker = ws.Range("A" & i).Value\
+        \
+        TotalVolume = TotalVolume + ws.Range("G" & i).Value\
+        OpeningValue = ws.Range("C" & i).Value\
+        TotalVolume = ws.Range("G" & i).Value\
+               \
+        'Conditional formating\
+        If ws.Range("J" & AddTableRow).Value < 0 Then\
+            ws.Range("J" & AddTableRow).Interior.ColorIndex = 3\
+        Else\
+            ws.Range("J" & AddTableRow).Interior.ColorIndex = 4\
+        End If\
+        \
+        AddTableRow = AddTableRow + 1\
+         \
+'Challenge trial # 1 - did not work\
+'LastRow2 = Cells(Rows.Count, 9).End(xlUp).Row\
+'For j = 2 To LastRow\
+\
+    'If Cells(j, 11).Value > GreatestIncrease Then\
+        'NewTicker = Cells(j, 9).Value\
+        'GreatestIncrease = Cells(j, 11).Value\
+        \
+        'NewTicker = Range("O2")\
+       ' GreatestIncrease = Range("P2")\
+    'End If\
+'Next j\
+\
+\
+'Challenge trial # 2 - did not work\
+'Dim IncreaseTicker As String\
+'Dim DecreaseTicker As String\
+'Dim GreatVolumeTicker As String\
+'Dim IncreasePercent As Double\
+'Dim DecreasePercent As Double\
+'Dim GreatVolume As Double\
+\
+'IncreasePercent = 0\
+'DecreasePercent = 0\
+'GreatVolume = 0\
+\
+'If PercentChange > IncreasePercent Then\
+'    IncreasePercent = PercentChange\
+'    IncreaseTicker = ticker\
+'ElseIf PercentChange < DecreasePercent Then\
+'    DecreasePercent = PercentChange\
+'    DecreaseTicker = ticker\
+'End If\
+\
+'If TotalVolume > GreatVolume Then\
+'    GreatVolume = TotalVolume\
+'    GreatVolumeTicker = ticker\
+'End If\
+\
+'ws.Cells(2, LastColumn + 8).Value = IncreaseTicker\
+'ws.Cells(3, LastColumn + 8).Value = DecreaseTicker\
+'ws.Cells(4, LastColumn + 8).Value = GreatVolumeTicker\
+'ws.Cells(2, LastColumn + 9).Value = IncreasePercent\
+'ws.Cells(3, LastColumn + 9).Value = DecreasePercent\
+'ws.Cells(4, LastColumn + 9).Value = GreatVolume\
+\
+'Reset values for next ticker\
+PercentChange = 0\
+TotalVolume = 0\
+  \
+'If the same ticker symbol - add the stock volume\
+Else\
+       TotalVolume = TotalVolume + ws.Cells(i, 7).Value\
+               \
+End If\
+\
+Next i\
+\
+Next ws\
+\
+End Sub\
+}
